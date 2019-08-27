@@ -51,7 +51,7 @@ def send_slack_notification(check_id):
     moment = check.moment
     headers = {'Content-Type': 'application/json'}
     timezone = pytz.timezone('Europe/Amsterdam')
-    data = [
+    blocks = [
         {
             "type": "section",
             "text": {
@@ -69,6 +69,10 @@ def send_slack_notification(check_id):
             ]
         }
     ]
+    data = {
+        "text": message,
+        "blocks": blocks
+    }
     r = requests.post(url, data=json.dumps(data), headers=headers)
     r.raise_for_status()
 
