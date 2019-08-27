@@ -1,0 +1,30 @@
+version: "3"
+services:
+  web:
+    build: .
+    command: /bin/sh -c "python manage.py migrate;python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/src
+    ports:
+      - "8000:8000"
+  celery:
+    build: .
+    command: celery -A wazefeed worker -l info -B
+    volumes:
+      - .:/src
+    depends_on:
+      - web
+      - redis
+  flower:
+    build: .
+    command: flower -A wazefeed --port=5555
+    volumes:
+      - .:/src
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+  redis:
+    image: redis:alpine
+    ports:
+      - "6378:6379"
